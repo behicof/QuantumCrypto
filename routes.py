@@ -10,7 +10,9 @@ from quantum_engine.post_singularity import (
     PostSingularityEconomy, QuantumAutocatalyticMarket, 
     simulate_post_singularity_crisis, generate_post_singularity_report
 )
+from quantum_engine.sample_response import generate_sample_interbrane_response, format_transaction_response
 import json
+import uuid
 import numpy as np
 import logging
 from datetime import datetime
@@ -499,6 +501,115 @@ def interbrane_transfer():
         
     except Exception as e:
         logging.error(f"Error in interbrane transfer: {e}")
+        return jsonify({
+            'status': 'error',
+            'message': str(e),
+            'temporal_error_code': 'T-ERR-' + uuid.uuid4().hex[:6]
+        }), 500
+
+
+@app.route('/api/quantum_transaction', methods=['POST'])
+def quantum_transaction():
+    """
+    مسیر API برای انتقال کوانتومی با فرمت پیشرفته بین-برینی
+    این API از فرمت جدید Quantum_Transaction_Request استفاده می‌کند که شامل اطلاعات زمانی-مکانی و نیازمندی‌های اگزوتیک است.
+    
+    نمونه درخواست:
+    {
+      "Quantum_Transaction_Request": {
+        "wallet_address": "ولت-شما-۰x8f3a",
+        "amount": "1.618e23 DET",
+        "coin_type": "DarkEnergyToken (DET)",
+        "temporal_coordinates": {
+          "t": -1.6e-42,
+          "x": 3.8e26,
+          "y": 4.2e26,
+          "z": 1.9e27
+        },
+        "exotic_requirements": {
+          "negative_energy": "1.6e-19 J",
+          "chronon_particles": 42,
+          "quantum_foam_stabilizers": 7
+        }
+      }
+    }
+    """
+    try:
+        request_data = request.json
+        
+        # استخراج اطلاعات از فرمت جدید درخواست
+        if "Quantum_Transaction_Request" in request_data:
+            req = request_data["Quantum_Transaction_Request"]
+            wallet_address = req.get("wallet_address", "ولت-شما-۰x8f3a")
+            amount_str = req.get("amount", "1.618e23 DET")
+            amount = float(amount_str.split(" ")[0])
+            
+            # استخراج مختصات زمانی-مکانی
+            temporal_coordinates = req.get("temporal_coordinates", {})
+            destination_universe = f"کیهان-موازی-{temporal_coordinates.get('x', 0):.1e}-{temporal_coordinates.get('y', 0):.1e}"
+            
+            # استخراج نیازمندی‌های اگزوتیک
+            exotic_requirements = req.get("exotic_requirements", {})
+            chronon_particles = exotic_requirements.get("chronon_particles", 42)
+            quantum_foam_stabilizers = exotic_requirements.get("quantum_foam_stabilizers", 7)
+        else:
+            # اگر فرمت جدید نباشد، از مقادیر پیش‌فرض استفاده می‌کنیم
+            wallet_address = request_data.get("wallet_address", "ولت-شما-۰x8f3a")
+            amount_str = request_data.get("amount", "1.618e23 DET")
+            if isinstance(amount_str, str) and " " in amount_str:
+                amount = float(amount_str.split(" ")[0])
+            else:
+                amount = float(amount_str)
+            destination_universe = "کیهان-موازی-۰xfe7a"
+        
+        # تولید پاسخ نمونه بر اساس درخواست
+        sample_request = {
+            "wallet_address": wallet_address,
+            "amount": amount_str if isinstance(amount_str, str) else f"{amount} DET"
+        }
+        
+        # تولید پاسخ با استفاده از ماژول نمونه‌ساز
+        response_data = generate_sample_interbrane_response(sample_request)
+        
+        # اضافه کردن پارامترهای پیشرفته به پاسخ
+        if "temporal_coordinates" in req:
+            response_data["temporal_coordinates"] = temporal_coordinates
+        if "exotic_requirements" in req:
+            response_data["exotic_fulfillment"] = {
+                "negative_energy_provided": exotic_requirements.get("negative_energy", "1.6e-19 J"),
+                "chronon_particles_used": chronon_particles,
+                "quantum_foam_stabilizers_deployed": quantum_foam_stabilizers,
+                "stability_factor": 0.99997 + (0.00003 * np.random.random())
+            }
+        
+        # ذخیره اطلاعات تراکنش در توکن انرژی تاریک
+        token = DarkEnergyToken(
+            address=wallet_address,
+            balance=amount,
+            fluctuation_rate=0.05,
+            casimir_effect=0.999,  # بسیار بالا برای انتقالات بین-برینی
+            hawking_radiation=0.001
+        )
+        
+        db.session.add(token)
+        db.session.commit()
+        
+        # اضافه کردن شناسه توکن به نتیجه
+        response_data["token_id"] = token.id
+        
+        # تولید پاسخ متنی زیبا
+        pretty_response = format_transaction_response(response_data)
+        
+        # ارسال پاسخ به صورت JSON
+        return jsonify({
+            'status': 'success',
+            'transaction_data': response_data,
+            'pretty_response': pretty_response,
+            'message': 'انتقال کوانتومی بین-برینی با موفقیت انجام شد'
+        })
+        
+    except Exception as e:
+        logging.error(f"Error in quantum transaction: {e}")
         return jsonify({
             'status': 'error',
             'message': str(e),
