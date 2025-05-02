@@ -1,0 +1,198 @@
+/* Custom styles for Quantum Multiverse Predictor */
+
+body {
+    background-color: #121212;
+    color: #f8f9fa;
+}
+
+/* Quantum-themed colors */
+:root {
+    --quantum-primary: #6a0dad;     /* Purple */
+    --quantum-secondary: #8a2be2;   /* BlueViolet */
+    --quantum-accent: #9370db;      /* MediumPurple */
+    --quantum-light: #b19cd9;       /* Light Purple */
+    --quantum-glow: #9966cc;        /* Amethyst */
+}
+
+/* Glowing elements */
+.quantum-glow {
+    box-shadow: 0 0 10px var(--quantum-glow), 0 0 20px var(--quantum-glow);
+    transition: box-shadow 0.3s ease-in-out;
+}
+
+.quantum-glow:hover {
+    box-shadow: 0 0 15px var(--quantum-glow), 0 0 30px var(--quantum-glow);
+}
+
+/* Custom cards for quantum data */
+.quantum-card {
+    background-color: rgba(106, 13, 173, 0.1);
+    border: 1px solid var(--quantum-primary);
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.quantum-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(106, 13, 173, 0.3);
+}
+
+/* Metrics cards */
+.quantum-metric-card {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.quantum-metric-card .card {
+    flex: 1;
+    min-width: 200px;
+    border: 1px solid var(--quantum-primary);
+    background: linear-gradient(145deg, #1a1a1a, #2d1a3c);
+}
+
+/* Timeline visualization */
+#timeline-visualization .bar {
+    transition: fill 0.3s ease;
+}
+
+/* Jumbotron with quantum styling */
+.quantum-jumbotron {
+    background: linear-gradient(145deg, #1c0631, #3b0d63);
+    border-radius: 10px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.quantum-jumbotron::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(147, 112, 219, 0.1) 0%, rgba(0, 0, 0, 0) 70%);
+    animation: quantum-pulse 15s infinite linear;
+    pointer-events: none;
+}
+
+@keyframes quantum-pulse {
+    0% {
+        transform: rotate(0deg);
+        opacity: 0.3;
+    }
+    50% {
+        transform: rotate(180deg);
+        opacity: 0.6;
+    }
+    100% {
+        transform: rotate(360deg);
+        opacity: 0.3;
+    }
+}
+
+/* Navigation styling */
+.navbar-custom {
+    background-color: #1a1a1a;
+    border-bottom: 1px solid var(--quantum-primary);
+}
+
+.nav-link.active {
+    color: var(--quantum-accent) !important;
+    border-bottom: 2px solid var(--quantum-accent);
+}
+
+/* Button styling */
+.btn-quantum {
+    background-color: var(--quantum-primary);
+    border-color: var(--quantum-secondary);
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.btn-quantum:hover {
+    background-color: var(--quantum-secondary);
+    border-color: var(--quantum-accent);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(138, 43, 226, 0.4);
+}
+
+/* Visualization containers */
+.visualization-container {
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    padding: 15px;
+    height: 400px;
+    border: 1px solid var(--quantum-primary);
+}
+
+/* Form controls */
+.form-control, .form-select {
+    background-color: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--quantum-primary);
+    color: #fff;
+}
+
+.form-control:focus, .form-select:focus {
+    background-color: rgba(0, 0, 0, 0.3);
+    border-color: var(--quantum-accent);
+    box-shadow: 0 0 0 0.25rem rgba(138, 43, 226, 0.25);
+    color: #fff;
+}
+
+/* Tables */
+.table-dark {
+    background-color: rgba(0, 0, 0, 0.2);
+    color: #fff;
+}
+
+/* Loader animation */
+.quantum-loader {
+    width: 50px;
+    height: 50px;
+    border: 3px solid rgba(138, 43, 226, 0.3);
+    border-radius: 50%;
+    border-top-color: var(--quantum-accent);
+    animation: quantum-spin 1s infinite linear;
+    margin: 20px auto;
+}
+
+@keyframes quantum-spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Code blocks */
+pre {
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 5px;
+    padding: 15px;
+    color: #d1d1d1;
+    border-left: 3px solid var(--quantum-primary);
+}
+
+/* Tooltip custom styling */
+.tooltip-inner {
+    background-color: var(--quantum-primary);
+    color: white;
+}
+
+.tooltip .arrow::before {
+    border-top-color: var(--quantum-primary);
+}
+
+/* Footer */
+.footer {
+    background-color: #1a1a1a;
+    border-top: 1px solid var(--quantum-primary);
+    padding: 1.5rem 0;
+    margin-top: 3rem;
+}

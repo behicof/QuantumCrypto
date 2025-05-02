@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1><i class="fas fa-tachometer-alt me-2"></i>Quantum Dashboard</h1>
+        <p class="lead">Monitor and manage your quantum multiverse simulations</p>
+    </div>
+    <div class="col-md-4 text-end">
+        <button id="create-simulation-btn" class="btn btn-quantum btn-lg quantum-glow">
+            <i class="fas fa-plus me-2"></i>New Simulation
+        </button>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card bg-dark">
+            <div class="card-body">
+                <h5 class="card-title"><i class="fas fa-atom me-2"></i>Quantum Status</h5>
+                <div class="display-6 mb-2">
+                    <span id="active-timelines">1,024</span>
+                    <small class="text-muted fs-6">timelines</small>
+                </div>
+                <div class="progress mb-3" style="height: 10px;">
+                    <div class="progress-bar bg-purple" role="progressbar" style="width: 85%; background-color: var(--quantum-primary);" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                <div class="d-flex justify-content-between small">
+                    <span>Entanglement Stability: 85%</span>
+                    <span>Coherence: Strong</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-dark">
+            <div class="card-body">
+                <h5 class="card-title"><i class="fas fa-robot me-2"></i>Nanobot Swarm</h5>
+                <div class="display-6 mb-2">
+                    <span id="nanobot-energy">2.43×10<sup>18</sup></span>
+                    <small class="text-muted fs-6">GeV/fm³</small>
+                </div>
+                <div class="progress mb-3" style="height: 10px;">
+                    <div class="progress-bar" role="progressbar" style="width: 62%; background-color: var(--quantum-secondary);" aria-valuenow="62" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                <div class="d-flex justify-content-between small">
+                    <span>Quark Manipulation: 62%</span>
+                    <span>Status: Active</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-dark">
+            <div class="card-body">
+                <h5 class="card-title"><i class="fas fa-coins me-2"></i>Dark Energy</h5>
+                <div class="display-6 mb-2">
+                    <span id="token-supply">1.68×10<sup>6</sup></span>
+                    <small class="text-muted fs-6">DET</small>
+                </div>
+                <div class="progress mb-3" style="height: 10px;">
+                    <div class="progress-bar" role="progressbar" style="width: 79%; background-color: var(--quantum-accent);" aria-valuenow="79" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                <div class="d-flex justify-content-between small">
+                    <span>Vacuum Stability: 79%</span>
+                    <span>Inflation: Low</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card bg-dark">
+            <div class="card-body">
+                <h5 class="card-title">Timeline Visualization</h5>
+                <div id="timeline-visualization" style="height: 300px;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card bg-dark">
+            <div class="card-body">
+                <h5 class="card-title">Quantum Volatility</h5>
+                <div id="volatility-chart" style="height: 250px;"></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card bg-dark">
+            <div class="card-body">
+                <h5 class="card-title">Dark Energy Consumption</h5>
+                <div id="energy-chart" style="height: 250px;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card bg-dark">
+            <div class="card-body">
+                <h5 class="card-title">Recent Simulations</h5>
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Timelines</th>
+                                <th>Created</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if simulations %}
+                                {% for simulation in simulations %}
+                                <tr>
+                                    <td>{{ simulation.id }}</td>
+                                    <td>{{ simulation.name }}</td>
+                                    <td>{{ simulation.num_timelines }}</td>
+                                    <td>{{ simulation.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                    <td>
+                                        <span class="badge bg-success">Active</span>
+                                    </td>
+                                    <td>
+                                        <a href="/simulation/{{ simulation.id }}" class="btn btn-sm btn-quantum">
+                                            <i class="fas fa-microscope me-1"></i>View
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="6" class="text-center">No simulations found. Create your first one!</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Create Simulation Modal -->
+<div class="modal fade" id="create-simulation-modal" tabindex="-1" aria-labelledby="createSimulationModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createSimulationModalLabel">
+                    <i class="fas fa-atom me-2"></i>Create New Simulation
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="simulation-form">
+                    <div class="mb-3">
+                        <label for="simulation-name" class="form-label">Simulation Name</label>
+                        <input type="text" class="form-control" id="simulation-name" placeholder="Enter simulation name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="simulation-description" class="form-label">Description</label>
+                        <textarea class="form-control" id="simulation-description" rows="3" placeholder="Enter simulation description"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="simulation-timelines" class="form-label">Number of Timelines</label>
+                        <select class="form-select" id="simulation-timelines">
+                            <option value="16">16 timelines (4 qubits)</option>
+                            <option value="64">64 timelines (6 qubits)</option>
+                            <option value="256">256 timelines (8 qubits)</option>
+                            <option value="1024" selected>1,024 timelines (10 qubits)</option>
+                            <option value="4096">4,096 timelines (12 qubits)</option>
+                        </select>
+                        <div class="form-text text-muted">More timelines provide better predictions but require more quantum resources.</div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" form="simulation-form" class="btn btn-quantum">
+                    <i class="fas fa-play me-2"></i>Create Simulation
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="/static/js/dashboard.js"></script>
+{% endblock %}

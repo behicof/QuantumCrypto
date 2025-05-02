@@ -1,0 +1,296 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Store simulation data for JavaScript access -->
+<div id="simulation-data" data-simulation-id="{{ simulation.id }}" data-timelines="{{ simulation.num_timelines }}"></div>
+
+<div class="row mb-4">
+    <div class="col">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/dashboard">Dashboard</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Simulation #{{ simulation.id }}</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="quantum-jumbotron mb-4">
+    <div class="row">
+        <div class="col-md-8">
+            <h1>{{ simulation.name }}</h1>
+            <p class="lead">{{ simulation.description }}</p>
+            <p>
+                <span class="badge bg-primary"><i class="fas fa-calendar me-1"></i>{{ simulation.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
+                <span class="badge bg-info"><i class="fas fa-cubes me-1"></i><span id="timeline-count">{{ simulation.num_timelines }}</span> timelines</span>
+            </p>
+        </div>
+        <div class="col-md-4 text-end">
+            <div class="btn-group">
+                <button id="run-prediction-btn" class="btn btn-quantum btn-lg">
+                    <i class="fas fa-play me-2"></i>Run Prediction
+                </button>
+                <button type="button" class="btn btn-quantum btn-lg dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                    <span class="visually-hidden">Toggle Dropdown</span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-dark">
+                    <li><a class="dropdown-item" href="#" id="manipulate-order-book-btn">Manipulate Order Book</a></li>
+                    <li><a class="dropdown-item" href="#" id="generate-dark-energy-btn">Generate Dark Energy</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="#quantum-states">View Quantum States</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card bg-dark">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Market Parameters</h5>
+            </div>
+            <div class="card-body">
+                <form id="market-parameters-form">
+                    <div class="mb-3">
+                        <label for="market-price" class="form-label">Market Price</label>
+                        <input type="number" class="form-control" id="market-price" value="100.0" step="0.01" min="0">
+                    </div>
+                    <div class="mb-3">
+                        <label for="market-volume" class="form-label">Trading Volume</label>
+                        <input type="number" class="form-control" id="market-volume" value="1000.0" step="1" min="0">
+                    </div>
+                    <div class="mb-3">
+                        <label for="market-sentiment" class="form-label">Market Sentiment (0-1)</label>
+                        <input type="range" class="form-range" id="market-sentiment" min="0" max="1" step="0.01" value="0.5">
+                        <div class="d-flex justify-content-between">
+                            <small class="text-muted">Bearish</small>
+                            <small class="text-muted" id="sentiment-value">0.5</small>
+                            <small class="text-muted">Bullish</small>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card bg-dark">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Order Book Settings</h5>
+            </div>
+            <div class="card-body">
+                <form id="order-book-form">
+                    <div class="mb-3">
+                        <label for="market-symbol" class="form-label">Market Symbol</label>
+                        <input type="text" class="form-control" id="market-symbol" value="DET/USD">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Manipulation Type</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="manipulation-type" id="manipulation-type-1" value="quantum" checked>
+                            <label class="form-check-label" for="manipulation-type-1">
+                                Quantum Chromodynamic
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="manipulation-type" id="manipulation-type-2" value="spacetime">
+                            <label class="form-check-label" for="manipulation-type-2">
+                                Spacetime Torsion
+                            </label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card bg-dark">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Dark Energy Wallet</h5>
+            </div>
+            <div class="card-body">
+                <form id="dark-energy-form">
+                    <div class="mb-3">
+                        <label for="wallet-address" class="form-label">Wallet Address</label>
+                        <input type="text" class="form-control" id="wallet-address" value="0x3f5a9e74c1142169b9635331">
+                    </div>
+                    <div class="mb-3">
+                        <label for="token-amount" class="form-label">Token Amount</label>
+                        <input type="number" class="form-control" id="token-amount" value="1.0" step="0.1" min="0">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card bg-dark">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Prediction Results</h5>
+            </div>
+            <div class="card-body">
+                <div id="prediction-results">
+                    <div class="text-center py-5">
+                        <p class="lead">Run a quantum prediction to see results</p>
+                        <button id="run-prediction-btn-2" class="btn btn-quantum">
+                            <i class="fas fa-play me-2"></i>Run Prediction
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card bg-dark">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Order Book Manipulation</h5>
+            </div>
+            <div class="card-body">
+                <div id="manipulation-results">
+                    <div class="text-center py-5">
+                        <p class="lead">Manipulate the order book to see results</p>
+                        <button id="manipulate-order-book-btn-2" class="btn btn-quantum">
+                            <i class="fas fa-robot me-2"></i>Manipulate Order Book
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card bg-dark">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Dark Energy Token</h5>
+            </div>
+            <div class="card-body">
+                <div id="dark-energy-results">
+                    <div class="text-center py-5">
+                        <p class="lead">Generate dark energy tokens to see results</p>
+                        <button id="generate-dark-energy-btn-2" class="btn btn-quantum">
+                            <i class="fas fa-coins me-2"></i>Generate Dark Energy
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4" id="quantum-states">
+    <div class="col-md-6">
+        <div class="card bg-dark">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Quantum State Visualization</h5>
+            </div>
+            <div class="card-body">
+                <div id="quantum-state-visualization" class="visualization-container"></div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card bg-dark">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Market Geometry</h5>
+            </div>
+            <div class="card-body">
+                <div id="market-geometry-visualization" class="visualization-container"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card bg-dark">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Quantum States History</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover">
+                        <thead>
+                            <tr>
+                                <th>Timeline ID</th>
+                                <th>Entanglement</th>
+                                <th>Market Parameters</th>
+                                <th>Created</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if quantum_states %}
+                                {% for state in quantum_states %}
+                                <tr>
+                                    <td>{{ state.timeline_id }}</td>
+                                    <td>{{ "%.4f"|format(state.entanglement_degree) }}</td>
+                                    <td>
+                                        {% if state.market_parameters %}
+                                            {% if state.market_parameters.price %}
+                                                Price: {{ state.market_parameters.price }},
+                                            {% endif %}
+                                            {% if state.market_parameters.volume %}
+                                                Volume: {{ state.market_parameters.volume }}
+                                            {% endif %}
+                                        {% else %}
+                                            N/A
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ state.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="4" class="text-center">No quantum states recorded yet.</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Store any quantum states data for JavaScript -->
+{% if quantum_states %}
+<div id="quantum-states-data" style="display:none;" data-states='{{ quantum_states|tojson }}'></div>
+{% endif %}
+
+<!-- Store any geometry data for JavaScript -->
+{% if manipulations and manipulations|length > 0 %}
+<div id="geometry-data" style="display:none;" data-geometry='{{ manipulations[0].distorted_geometry|tojson }}'></div>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="/static/js/simulation.js"></script>
+<script src="/static/js/visualization.js"></script>
+<script>
+    // Update sentiment value display when slider changes
+    document.getElementById('market-sentiment').addEventListener('input', function() {
+        document.getElementById('sentiment-value').textContent = this.value;
+    });
+    
+    // Wire up additional buttons
+    document.getElementById('run-prediction-btn-2').addEventListener('click', function() {
+        document.getElementById('run-prediction-btn').click();
+    });
+    
+    document.getElementById('manipulate-order-book-btn-2').addEventListener('click', function() {
+        document.getElementById('manipulate-order-book-btn').click();
+    });
+    
+    document.getElementById('generate-dark-energy-btn-2').addEventListener('click', function() {
+        document.getElementById('generate-dark-energy-btn').click();
+    });
+</script>
+{% endblock %}
