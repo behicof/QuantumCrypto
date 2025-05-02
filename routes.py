@@ -4,6 +4,7 @@ from models import Simulation, Prediction, QuantumState, OrderBookManipulation, 
 from quantum_engine.predictor import QuantumMultiversePredictor
 from quantum_engine.nanobots import PlasmaNanobotSwarm
 from quantum_engine.economics import simulate_dark_energy_token
+from quantum_engine.holographic import HolographicMarketEngine, MultiverseEconomyGenerator, simulate_multiverse_collapse
 import json
 import numpy as np
 import logging
@@ -246,6 +247,131 @@ def quantum_metrics():
         
     except Exception as e:
         logging.error(f"Error retrieving quantum metrics: {e}")
+        return jsonify({
+            'status': 'error',
+            'message': str(e)
+        }), 500
+
+
+@app.route('/api/holographic_prediction', methods=['POST'])
+def holographic_prediction():
+    """
+    مسیر API برای پیش‌بینی بازار با استفاده از موتور بازار هولوگرافیک
+    این API پیشرفته‌ترین روش پیش‌بینی بازار با استفاده از اصل هولوگرافیک را فراهم می‌کند.
+    """
+    try:
+        data = request.json
+        simulation_id = data.get('simulation_id')
+        
+        simulation = Simulation.query.get_or_404(simulation_id)
+        
+        # اطلاعات بازار را از درخواست استخراج می‌کنیم
+        market_data = {
+            'price': float(data.get('price', 100.0)),
+            'volume': float(data.get('volume', 1000.0)),
+            'sentiment': float(data.get('sentiment', 0.5))
+        }
+        
+        # موتور بازار هولوگرافیک را آماده‌سازی می‌کنیم
+        holographic_engine = HolographicMarketEngine(num_qubits=5)
+        
+        # پیش‌بینی هولوگرافیک را اجرا می‌کنیم
+        prediction_results = holographic_engine.predict_market_hologram(market_data)
+        
+        # نتایج را در پایگاه داده ذخیره می‌کنیم
+        new_prediction = Prediction(
+            simulation_id=simulation_id,
+            probability_landscape=prediction_results['probability_landscape'],
+            optimal_strategy=prediction_results['optimal_strategy'],
+            quantum_volatility=prediction_results['quantum_volatility'],
+            dark_energy_consumption=np.random.uniform(0.1, 10.0)  # مقدار شبیه‌سازی شده
+        )
+        
+        db.session.add(new_prediction)
+        
+        # حالت‌های کوانتومی را ذخیره می‌کنیم
+        for i, state in enumerate(prediction_results.get('quantum_states', [])[:10]):
+            new_state = QuantumState(
+                simulation_id=simulation_id,
+                timeline_id=f"holographic-{i}",
+                state_vector=state,
+                market_parameters=market_data,
+                entanglement_degree=np.random.uniform(0.8, 1.0)  # درهم‌تنیدگی بالا در حالت هولوگرافیک
+            )
+            db.session.add(new_state)
+        
+        db.session.commit()
+        
+        return jsonify({
+            'status': 'success',
+            'prediction_id': new_prediction.id,
+            'holographic_results': prediction_results,
+            'message': 'Holographic prediction completed successfully'
+        })
+        
+    except Exception as e:
+        logging.error(f"Error in holographic prediction: {e}")
+        return jsonify({
+            'status': 'error',
+            'message': str(e)
+        }), 500
+
+
+@app.route('/api/multiverse_collapse', methods=['POST'])
+def multiverse_collapse():
+    """
+    مسیر API برای شبیه‌سازی فروپاشی چندجهانی بازارها
+    این API امکان شبیه‌سازی بحران‌های شدید بازار و رویدادهای فروپاشی را فراهم می‌کند.
+    """
+    try:
+        data = request.json
+        simulation_id = data.get('simulation_id')
+        
+        # بررسی وجود شبیه‌سازی
+        simulation = Simulation.query.get_or_404(simulation_id)
+        
+        # اجرای شبیه‌سازی فروپاشی چندجهانی
+        collapse_results = simulate_multiverse_collapse()
+        
+        # ایجاد یک پیش‌بینی مرتبط با فروپاشی
+        collapse_prediction = Prediction(
+            simulation_id=simulation_id,
+            probability_landscape={"collapse": 1.0},
+            optimal_strategy={
+                "direction": "Quantum Collapse",
+                "confidence": 0.99,
+                "leverage": 0.1,  # اهرم پایین در هنگام فروپاشی
+                "protection_measures": ["Multiverse Hedging", "Chronology Protection"]
+            },
+            quantum_volatility=9.9,  # نوسان بسیار بالا
+            dark_energy_consumption=100.0  # مصرف بسیار بالای انرژی تاریک
+        )
+        
+        db.session.add(collapse_prediction)
+        
+        # ذخیره برخی حالت‌های کوانتومی مرتبط با فروپاشی
+        market_states = collapse_results.get('Market_States', [])
+        for i, state in enumerate(market_states):
+            new_state = QuantumState(
+                simulation_id=simulation_id,
+                timeline_id=f"collapse-{i}",
+                state_vector={"collapse_state": state},
+                market_parameters={"collapse": True},
+                entanglement_degree=0.99  # درهم‌تنیدگی بسیار بالا در فروپاشی
+            )
+            db.session.add(new_state)
+        
+        db.session.commit()
+        
+        return jsonify({
+            'status': 'success',
+            'collapse_prediction_id': collapse_prediction.id,
+            'collapse_results': collapse_results,
+            'message': 'Multiverse collapse simulation completed successfully'
+        })
+        
+    except Exception as e:
+        logging.error(f"Error in multiverse collapse simulation: {e}")
         return jsonify({
             'status': 'error',
             'message': str(e)
