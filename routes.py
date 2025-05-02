@@ -6,6 +6,10 @@ from quantum_engine.nanobots import PlasmaNanobotSwarm
 from quantum_engine.economics import simulate_dark_energy_token
 from quantum_engine.holographic import HolographicMarketEngine, MultiverseEconomyGenerator, simulate_multiverse_collapse
 from quantum_engine.wallet import QuantumWalletTransporter, QuantumAsset, ChronoProtection
+from quantum_engine.post_singularity import (
+    PostSingularityEconomy, QuantumAutocatalyticMarket, 
+    simulate_post_singularity_crisis, generate_post_singularity_report
+)
 import json
 import numpy as np
 import logging
@@ -433,6 +437,95 @@ def quantum_wallet_transfer():
         
     except Exception as e:
         logging.error(f"Error in quantum wallet transfer: {e}")
+        return jsonify({
+            'status': 'error',
+            'message': str(e)
+        }), 500
+
+
+@app.route('/api/post_singularity_economy', methods=['POST'])
+def post_singularity_economy():
+    """
+    مسیر API برای اکوسیستم مالی پساتکینگی
+    این API امکان شبیه‌سازی و تحلیل اقتصاد پساتکینگی با استفاده از نظریه یکپارچه فاینمن-شارکوفسکی را فراهم می‌کند.
+    """
+    try:
+        data = request.json
+        simulation_id = data.get('simulation_id')
+        
+        # بررسی وجود شبیه‌سازی
+        simulation = Simulation.query.get_or_404(simulation_id)
+        
+        # ایجاد اقتصاد پساتکینگی
+        economy = PostSingularityEconomy(dimensions=data.get('dimensions', 11))
+        
+        # بهینه‌سازی بازار
+        market_optimization = economy.optimize_market(epochs=data.get('epochs', 100))
+        
+        # بازار خودکاتالیتیکی
+        autocatalytic_market = QuantumAutocatalyticMarket()
+        initial_capital = data.get('initial_capital', [1.0, 0.5, 2.0])
+        growth_results = autocatalytic_market.catalyze_growth(
+            initial_capital, 
+            time_span=data.get('time_span', 10.0)
+        )
+        
+        # ذخیره نتایج در پایگاه داده
+        new_prediction = Prediction(
+            simulation_id=simulation_id,
+            probability_landscape={
+                "optimal_parameter": market_optimization['optimal_parameter'],
+                "growth_rate": growth_results['growth_rate']
+            },
+            optimal_strategy={
+                "parameter": market_optimization['optimal_parameter'],
+                "market_energy": market_optimization['market_energy'],
+                "attractors": growth_results['quantum_attractors']['attractor_types']
+            },
+            quantum_volatility=market_optimization['quantum_volatility'],
+            dark_energy_consumption=100.0  # مصرف بالای انرژی تاریک در اقتصاد پساتکینگی
+        )
+        
+        db.session.add(new_prediction)
+        
+        # ذخیره حالت‌های کوانتومی
+        quantum_state = QuantumState(
+            simulation_id=simulation_id,
+            timeline_id=f"post-singularity",
+            state_vector={
+                "market_energy": market_optimization['market_energy'],
+                "convergence": market_optimization['convergence_trajectory'][-5:]
+            },
+            market_parameters={
+                "dimensions": economy.dimensions,
+                "market_temperature": economy.market_temperature
+            },
+            entanglement_degree=0.99  # درهم‌تنیدگی بسیار بالا در اقتصاد پساتکینگی
+        )
+        
+        db.session.add(quantum_state)
+        db.session.commit()
+        
+        # انجام شبیه‌سازی بحران پساتکینگی
+        crisis_results = simulate_post_singularity_crisis()
+        
+        # تولید گزارش پساتکینگی
+        report = generate_post_singularity_report()
+        
+        return jsonify({
+            'status': 'success',
+            'prediction_id': new_prediction.id,
+            'post_singularity_results': {
+                'market_optimization': market_optimization,
+                'growth_results': growth_results,
+                'crisis_simulation': crisis_results,
+                'economic_report': report
+            },
+            'message': 'Post-singularity quantum economy simulation completed successfully'
+        })
+        
+    except Exception as e:
+        logging.error(f"Error in post-singularity economy simulation: {e}")
         return jsonify({
             'status': 'error',
             'message': str(e)
