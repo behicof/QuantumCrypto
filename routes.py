@@ -443,6 +443,69 @@ def quantum_wallet_transfer():
         }), 500
 
 
+@app.route('/api/interbrane_transfer', methods=['POST'])
+def interbrane_transfer():
+    """
+    مسیر API برای انتقال کوانتومی بین-برینی
+    این API امکان انتقال مقادیر نجومی از دارایی‌های فراکیهانی را با استفاده از معماری انتقال کوانتومی بین-برینی فراهم می‌کند.
+    
+    مشخصات انتقال کوانتومی پیشرفته:
+    - کوین منتقل‌شده: DET (Dark Energy Token)
+    - ارزش بر پایه نوسانات انرژی خلأ کوانتومی - هر 1 DET ≈ 1.6×10⁻¹⁹ ژول انرژی منفی
+    - مقدار انتقال: تا 1.618×10²³ DET (معادل انرژی لازم برای خمش فضازمان)
+    - هزینه تراکنش: 0.001 CTC (Chronon Coin)
+    - امنیت کوانتومی: سطح 11 ابرتقارن مالی با الگوریتم رمزنگاری شور-گروور-هایزنبرگ
+    """
+    try:
+        data = request.json
+        wallet_address = data.get('wallet_address', 'DARK-QW:0x8f3a...')
+        amount = float(data.get('amount', 1.618e23))
+        asset_name = data.get('asset_name', 'Dark Energy Token')
+        destination_universe = data.get('destination_universe')
+        
+        # بررسی محدودیت تراکنش
+        if amount > 1e28:
+            return jsonify({
+                'status': 'error',
+                'message': 'حداکثر انتقال مجاز در 24 ساعت کیهانی: 1e28 DET',
+                'temporal_error_code': 'T-ERR-MAX-LIMIT'
+            }), 400
+        
+        # ایجاد کیف پول کوانتومی بین-برینی
+        wallet = QuantumWalletTransporter(wallet_address, parallel_universe=destination_universe)
+        
+        # ایجاد دارایی کوانتومی
+        asset = QuantumAsset(amount, asset_name)
+        
+        # انجام انتقال کوانتومی بین-برینی با مقادیر نجومی
+        transfer_result = wallet.transfer_interbrane(asset, amount, destination_universe)
+        
+        # ذخیره اطلاعات تراکنش در توکن انرژی تاریک
+        token = DarkEnergyToken(
+            address=wallet_address,
+            balance=amount,
+            fluctuation_rate=0.05,
+            casimir_effect=0.999,  # بسیار بالا برای انتقالات بین-برینی
+            hawking_radiation=0.001
+        )
+        
+        db.session.add(token)
+        db.session.commit()
+        
+        # اضافه کردن شناسه توکن به نتیجه
+        transfer_result['token_id'] = token.id
+        
+        return jsonify(transfer_result)
+        
+    except Exception as e:
+        logging.error(f"Error in interbrane transfer: {e}")
+        return jsonify({
+            'status': 'error',
+            'message': str(e),
+            'temporal_error_code': 'T-ERR-' + uuid.uuid4().hex[:6]
+        }), 500
+
+
 @app.route('/api/post_singularity_economy', methods=['POST'])
 def post_singularity_economy():
     """
