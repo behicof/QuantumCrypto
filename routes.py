@@ -14,12 +14,21 @@ from quantum_engine.superconductivity import (
     QuantumFieldGenerator, QuantumSuperflow, 
     measure_vacuum_energy, activate_superconductivity
 )
+from quantum_engine.paradox_shield import (
+    ParadoxShield, create_paradox_shield, protect_wallet,
+    TemporalParadoxError, CausalityViolationError, WormholeCollapseError
+)
+from quantum_engine.quantum_fuel import (
+    QuantumFuelGenerator, QuantumFuelProcessor, FuelConsumptionMonitor,
+    generate_quantum_fuel, process_fuel_for_system, monitor_consumption_dashboard
+)
 from quantum_engine.sample_response import generate_sample_interbrane_response, format_transaction_response
 import json
 import uuid
+import random
 import numpy as np
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 
 # Make now() function available to all templates
 @app.context_processor
@@ -709,6 +718,343 @@ def activate_quantum_superconductivity():
             'status': 'error',
             'message': str(e),
             'error_code': 'Q-SC-ERR-' + uuid.uuid4().hex[:6]
+        }), 500
+
+
+@app.route('/api/paradox_shield', methods=['POST'])
+def activate_paradox_shield():
+    """
+    مسیر API برای فعال‌سازی محافظ پارادوکس کوانتومی
+    این API از دارایی‌های کاربر در برابر پارادوکس‌های زمانی، ناهنجاری‌های کرمچاله‌ای و نقض علیت محافظت می‌کند.
+    محافظ پارادوکس از آرایه‌های مخابرۀ بین‌بعدی با فرمول E=mc²×∇²Φ استفاده می‌کند تا حفاظت چند‌لایه را فراهم کند.
+    """
+    try:
+        data = request.json
+        wallet_address = data.get('wallet_address', 'کیف پول ناشناس')
+        protection_level = int(data.get('protection_level', 3))
+        
+        # بررسی صحت سطح حفاظت
+        if protection_level < 1 or protection_level > 5:
+            return jsonify({
+                'status': 'error',
+                'message': 'سطح حفاظت باید بین 1 تا 5 باشد',
+                'code': 'INVALID_PROTECTION_LEVEL'
+            }), 400
+        
+        # فعال‌سازی محافظ پارادوکس
+        shield_results = protect_wallet(wallet_address, protection_level)
+        
+        # بررسی تراکنش‌های اخیر برای شناسایی پارادوکس زمانی
+        # ساخت یک تراکنش تست
+        test_transaction = {
+            'timestamp': datetime.utcnow().isoformat(),
+            'amount': 1.618e23,
+            'from': wallet_address,
+            'to': f"DEST-{uuid.uuid4().hex[:8]}",
+            'wormhole_metrics': {
+                'throat_diameter': '1.618e-35 m',
+                'traversability_index': 0.99,
+                'causality_preservation': 0.998
+            }
+        }
+        
+        # ایجاد یک نمونه از ParadoxShield
+        shield = create_paradox_shield(protection_level)
+        
+        # تحلیل پارادوکس
+        paradox_analysis = shield.detect_temporal_paradox(test_transaction, sensitivity=0.7)
+        
+        # محافظت از کرمچاله
+        wormhole_protection = shield.protect_wormhole({
+            'stability': 0.85,
+            'throat_diameter': '1.618e-35 m',
+            'causality_preservation': 0.95
+        })
+        
+        # تحلیل خط زمانی
+        timeline_analysis = shield.analyze_timeline({
+            'start_time': (datetime.utcnow() - timedelta(days=7)).timestamp(),
+            'end_time': datetime.utcnow().timestamp(),
+            'events': []  # رویدادهای خودکار تولید خواهند شد
+        }, depth=3, simulation_steps=50)
+        
+        # افزودن اطلاعات تحلیل به نتایج
+        shield_results['paradox_analysis'] = paradox_analysis
+        shield_results['wormhole_protection'] = wormhole_protection
+        shield_results['timeline_analysis_summary'] = timeline_analysis['summary']
+        
+        return jsonify({
+            'status': 'success',
+            'shield_data': shield_results,
+            'message': f'محافظ پارادوکس کوانتومی با سطح حفاظت {protection_level} با موفقیت فعال شد.'
+        })
+        
+    except TemporalParadoxError as e:
+        logging.error(f"Temporal paradox detected: {e}")
+        return jsonify({
+            'status': 'error',
+            'message': f'خطر: پارادوکس زمانی شناسایی شد - {str(e)}',
+            'error_code': 'TEMPORAL_PARADOX',
+            'severity': 'HIGH'
+        }), 500
+        
+    except CausalityViolationError as e:
+        logging.error(f"Causality violation detected: {e}")
+        return jsonify({
+            'status': 'error',
+            'message': f'خطر: نقض اصل علیت - {str(e)}',
+            'error_code': 'CAUSALITY_VIOLATION',
+            'severity': 'CRITICAL'
+        }), 500
+        
+    except WormholeCollapseError as e:
+        logging.error(f"Wormhole collapse detected: {e}")
+        return jsonify({
+            'status': 'error',
+            'message': f'خطر: فروپاشی کرمچاله - {str(e)}',
+            'error_code': 'WORMHOLE_COLLAPSE',
+            'severity': 'CRITICAL'
+        }), 500
+        
+    except Exception as e:
+        logging.error(f"Error activating paradox shield: {e}")
+        return jsonify({
+            'status': 'error',
+            'message': str(e),
+            'error_code': 'SHIELD_ERROR'
+        }), 500
+
+
+@app.route('/api/quantum_fuel/generate', methods=['POST'])
+def generate_fuel_api():
+    """
+    مسیر API برای تولید فیول کوانتومی
+    این API با استفاده از انرژی خلأ و تکنیک‌های استخراج انرژی پیشرفته، فیول کوانتومی تولید می‌کند.
+    """
+    try:
+        data = request.json
+        amount = float(data.get('amount', 1.0e8))
+        efficiency = float(data.get('efficiency', 0.75))
+        
+        # بررسی مقادیر ورودی
+        if amount <= 0.0:
+            return jsonify({
+                'status': 'error',
+                'message': 'مقدار تولید باید مثبت باشد',
+                'error_code': 'INVALID_AMOUNT'
+            }), 400
+        
+        if efficiency <= 0.0 or efficiency > 0.99:
+            return jsonify({
+                'status': 'error',
+                'message': 'بازده باید بین 0 و 0.99 باشد',
+                'error_code': 'INVALID_EFFICIENCY'
+            }), 400
+        
+        # تولید فیول کوانتومی
+        fuel_data = generate_quantum_fuel(amount, efficiency)
+        
+        return jsonify({
+            'status': 'success',
+            'fuel_data': fuel_data,
+            'message': f'فیول کوانتومی با موفقیت تولید شد - انرژی: {fuel_data["energy_content"]:.2e} ژول، خلوص: {fuel_data["purity"]:.4f}'
+        })
+        
+    except Exception as e:
+        logging.error(f"Error generating quantum fuel: {e}")
+        return jsonify({
+            'status': 'error',
+            'message': str(e),
+            'error_code': 'FUEL_GEN_ERROR'
+        }), 500
+
+
+@app.route('/api/quantum_fuel/process', methods=['POST'])
+def process_fuel_api():
+    """
+    مسیر API برای پردازش فیول کوانتومی خام به محصول نهایی
+    این API فیول خام را برای استفاده در سیستم‌های مختلف بهینه‌سازی می‌کند.
+    """
+    try:
+        data = request.json
+        fuel_data = data.get('fuel_data', {})
+        system_type = data.get('system_type', 'computation')
+        optimization_level = data.get('optimization_level', 'standard')
+        
+        # بررسی مقادیر ورودی
+        valid_system_types = ['computation', 'transfer', 'shield', 'mining']
+        if system_type not in valid_system_types:
+            return jsonify({
+                'status': 'error',
+                'message': f'نوع سیستم نامعتبر. مقادیر مجاز: {", ".join(valid_system_types)}',
+                'error_code': 'INVALID_SYSTEM_TYPE'
+            }), 400
+        
+        valid_optimization_levels = ['standard', 'advanced', 'ultimate']
+        if optimization_level not in valid_optimization_levels:
+            return jsonify({
+                'status': 'error',
+                'message': f'سطح بهینه‌سازی نامعتبر. مقادیر مجاز: {", ".join(valid_optimization_levels)}',
+                'error_code': 'INVALID_OPTIMIZATION_LEVEL'
+            }), 400
+        
+        # پردازش فیول
+        processed_fuel = process_fuel_for_system(fuel_data, system_type, optimization_level)
+        
+        return jsonify({
+            'status': 'success',
+            'processed_fuel': processed_fuel,
+            'message': f'فیول کوانتومی با موفقیت برای سیستم {system_type} پردازش شد'
+        })
+        
+    except Exception as e:
+        logging.error(f"Error processing quantum fuel: {e}")
+        return jsonify({
+            'status': 'error',
+            'message': str(e),
+            'error_code': 'FUEL_PROCESS_ERROR'
+        }), 500
+
+
+@app.route('/api/quantum_fuel/monitor', methods=['GET'])
+def monitor_fuel_api():
+    """
+    مسیر API برای نظارت بر مصرف فیول کوانتومی
+    این API اطلاعات جامعی از مصرف فیول در سیستم‌های مختلف را ارائه می‌دهد.
+    """
+    try:
+        # تولید داشبورد نظارت بر مصرف
+        dashboard = monitor_consumption_dashboard()
+        
+        return jsonify({
+            'status': 'success',
+            'dashboard': dashboard,
+            'message': 'داشبورد نظارت بر مصرف فیول با موفقیت تولید شد'
+        })
+        
+    except Exception as e:
+        logging.error(f"Error monitoring quantum fuel: {e}")
+        return jsonify({
+            'status': 'error',
+            'message': str(e),
+            'error_code': 'FUEL_MONITOR_ERROR'
+        }), 500
+
+
+@app.route('/api/quantum_fuel/optimize', methods=['POST'])
+def optimize_fuel_api():
+    """
+    مسیر API برای بهینه‌سازی مصرف فیول در سیستم‌های مختلف
+    این API مصرف انرژی را در سیستم‌های مشخص‌شده بهینه می‌کند.
+    """
+    try:
+        data = request.json
+        systems = data.get('systems', None)
+        optimization_level = data.get('optimization_level', 'medium')
+        
+        # بررسی مقادیر ورودی
+        valid_optimization_levels = ['low', 'medium', 'high', 'aggressive']
+        if optimization_level not in valid_optimization_levels:
+            return jsonify({
+                'status': 'error',
+                'message': f'سطح بهینه‌سازی نامعتبر. مقادیر مجاز: {", ".join(valid_optimization_levels)}',
+                'error_code': 'INVALID_OPTIMIZATION_LEVEL'
+            }), 400
+        
+        # ایجاد سیستم نظارت
+        monitor = FuelConsumptionMonitor()
+        
+        # شبیه‌سازی مصرف برای سیستم‌های مختلف
+        for system, config in monitor.consumption_table.items():
+            # شبیه‌سازی 5 رکورد مصرف برای هر سیستم
+            for i in range(5):
+                duration = random.uniform(60, 3600)
+                load_factor = random.uniform(0.3, 1.0)
+                monitor.record_consumption(system, duration, load_factor)
+        
+        # بهینه‌سازی مصرف
+        optimization_results = monitor.optimize_consumption(systems, optimization_level)
+        
+        return jsonify({
+            'status': 'success',
+            'optimization_results': optimization_results,
+            'message': f'بهینه‌سازی مصرف فیول با سطح {optimization_level} با موفقیت انجام شد'
+        })
+        
+    except Exception as e:
+        logging.error(f"Error optimizing quantum fuel usage: {e}")
+        return jsonify({
+            'status': 'error',
+            'message': str(e),
+            'error_code': 'FUEL_OPTIMIZATION_ERROR'
+        }), 500
+
+
+@app.route('/api/quantum_fuel/catalog', methods=['GET'])
+def fuel_catalog_api():
+    """
+    مسیر API برای دریافت کاتالوگ محصولات فیول کوانتومی
+    این API اطلاعات کاملی از انواع فیول قابل تولید و ویژگی‌های آن‌ها را ارائه می‌دهد.
+    """
+    try:
+        # ایجاد پردازشگر فیول
+        processor = QuantumFuelProcessor()
+        
+        # دریافت کاتالوگ محصولات
+        catalog = processor.get_product_catalog()
+        
+        return jsonify({
+            'status': 'success',
+            'catalog': catalog,
+            'message': 'کاتالوگ محصولات فیول کوانتومی با موفقیت تولید شد'
+        })
+        
+    except Exception as e:
+        logging.error(f"Error generating fuel catalog: {e}")
+        return jsonify({
+            'status': 'error',
+            'message': str(e),
+            'error_code': 'FUEL_CATALOG_ERROR'
+        }), 500
+
+
+@app.route('/api/shield_report', methods=['GET'])
+def get_shield_report():
+    """
+    مسیر API برای دریافت گزارش وضعیت محافظ پارادوکس
+    این API اطلاعات جامعی از وضعیت آرایه‌های مخابره، نقاط بازیابی و سلامت کلی محافظ را ارائه می‌دهد.
+    """
+    try:
+        wallet_address = request.args.get('wallet_address', 'کیف پول ناشناس')
+        
+        # ایجاد محافظ با سطح حفاظت پیش‌فرض
+        shield = create_paradox_shield()
+        
+        # ساخت داده‌های کیف پول مجازی
+        wallet_data = {
+            "address": wallet_address,
+            "creation_time": datetime.utcnow().isoformat(),
+            "balance": "1.618e23 DET"
+        }
+        
+        # ایجاد نقطه بازیابی
+        shield.create_restoration_point(wallet_data)
+        
+        # تولید گزارش محافظ
+        report = shield.generate_shield_report()
+        
+        return jsonify({
+            'status': 'success',
+            'shield_report': report,
+            'report_time': datetime.utcnow().isoformat()
+        })
+        
+    except Exception as e:
+        logging.error(f"Error generating shield report: {e}")
+        return jsonify({
+            'status': 'error',
+            'message': str(e),
+            'error_code': 'REPORT_ERROR'
         }), 500
 
 
