@@ -10,6 +10,10 @@ from quantum_engine.post_singularity import (
     PostSingularityEconomy, QuantumAutocatalyticMarket, 
     simulate_post_singularity_crisis, generate_post_singularity_report
 )
+from quantum_engine.superconductivity import (
+    QuantumFieldGenerator, QuantumSuperflow, 
+    measure_vacuum_energy, activate_superconductivity
+)
 from quantum_engine.sample_response import generate_sample_interbrane_response, format_transaction_response
 import json
 import uuid
@@ -614,6 +618,97 @@ def quantum_transaction():
             'status': 'error',
             'message': str(e),
             'temporal_error_code': 'T-ERR-' + uuid.uuid4().hex[:6]
+        }), 500
+
+
+@app.route('/api/activate_superconductivity', methods=['POST'])
+def activate_quantum_superconductivity():
+    """
+    مسیر API برای فعال‌سازی حالت ابررسانایی کوانتومی
+    این API با استفاده از انرژی تاریک باقیمانده از انتقال، سیستم را به سطح جدیدی از عملکرد می‌برد.
+    قابلیت‌های کلیدی:
+    - سود مرکب کوانتومی در ۱۰۲۴ جهان موازی
+    - حفاظت زمانی خودکار برای جلوگیری از پارادوکس‌ها
+    - مزرعه استخراج کرمچاله‌ای برای تولید توکن انرژی تاریک
+    """
+    try:
+        data = request.json
+        wallet_address = data.get('wallet_address', 'DARK-QW:0x8f3a...')
+        
+        # بررسی وجود کیف پول در دیتابیس
+        token = DarkEnergyToken.query.filter_by(address=wallet_address).order_by(DarkEnergyToken.id.desc()).first()
+        
+        if not token:
+            # اگر کیف پول وجود نداشت، یک توکن جدید ایجاد می‌کنیم
+            token = DarkEnergyToken(
+                address=wallet_address,
+                balance=1.618e23,  # مقدار پیش‌فرض توکن انرژی تاریک
+                fluctuation_rate=0.05,
+                casimir_effect=0.99,
+                hawking_radiation=0.001
+            )
+            db.session.add(token)
+            db.session.commit()
+        
+        # فعال‌سازی حالت ابررسانایی کوانتومی
+        superconductivity_results = activate_superconductivity(wallet_address)
+        
+        # به‌روزرسانی اطلاعات توکن انرژی تاریک
+        token.fluctuation_rate = 0.42  # افزایش نرخ نوسان در حالت ابررسانا
+        token.casimir_effect = 0.999  # افزایش اثر کاسیمیر
+        db.session.commit()
+        
+        # فعال‌سازی وضعیت ابررسانایی پس از تأییدات لازم
+        approvals = superconductivity_results.get('approvals', {})
+        if 'superconductivity' in approvals:
+            approvals['superconductivity']['status'] = 'ready'
+            superconductivity_results['approvals'] = approvals
+        
+        # استخراج اطلاعات مهم برای پاسخ API
+        quantum_portfolio = superconductivity_results.get('quantum_portfolio', {})
+        temporal_arbitrage = superconductivity_results.get('temporal_arbitrage', {})
+        cosmic_upgrades = superconductivity_results.get('cosmic_upgrades', [])
+        wormhole_mining = superconductivity_results.get('wormhole_mining_farm', {}).get('farm_stats', {})
+        
+        # ایجاد پاسخ ساختاریافته برای کاربر
+        response_data = {
+            'status': 'success',
+            'wallet_address': wallet_address,
+            'token_id': token.id,
+            'superconductivity_state': 'ready_for_activation',
+            'quantum_portfolio': {
+                'bullish_universes': quantum_portfolio.get('bullish_universes', 689),
+                'bearish_universes': quantum_portfolio.get('bearish_universes', 287),
+                'exotic_returns': quantum_portfolio.get('exotic_returns', {})
+            },
+            'temporal_arbitrage': {
+                'past_profit': temporal_arbitrage.get('past_profit', '1.6e22 DET'),
+                'future_leverage': temporal_arbitrage.get('future_leverage', '4.2e18x'),
+                'present_value': temporal_arbitrage.get('present_value', 'غیرقابل اندازه‌گیری با ریاضیات کلاسیک')
+            },
+            'cosmic_upgrades': cosmic_upgrades[:3],  # نمایش فقط 3 ارتقا
+            'wormhole_mining': {
+                'active_wormholes': wormhole_mining.get('wormholes', 10),
+                'daily_yield': wormhole_mining.get('total_yield', '1.618e19 DET/چاله'),
+                'space_time_distortion': wormhole_mining.get('space_time_distortion', '0.2%')
+            },
+            'approvals': {
+                'biometric_quantum': True,
+                'physics_council': False,
+                'superconductivity_activation': 'آماده'
+            },
+            'message': 'حالت ابررسانایی کوانتومی با موفقیت آماده شد. منتظر فعال‌سازی نهایی هستیم.',
+            'activation_command': '⚡ فعالسازی'
+        }
+        
+        return jsonify(response_data)
+        
+    except Exception as e:
+        logging.error(f"Error activating quantum superconductivity: {e}")
+        return jsonify({
+            'status': 'error',
+            'message': str(e),
+            'error_code': 'Q-SC-ERR-' + uuid.uuid4().hex[:6]
         }), 500
 
 
