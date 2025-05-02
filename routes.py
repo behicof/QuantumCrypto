@@ -23,6 +23,11 @@ from quantum_engine.quantum_fuel import (
     generate_quantum_fuel, process_fuel_for_system, monitor_consumption_dashboard
 )
 from quantum_engine.sample_response import generate_sample_interbrane_response, format_transaction_response
+from quantum_engine.god_mode import (
+    activate_god_mode, navigate_timeline, execute_hyperdimensional_arbitrage,
+    forge_financial_reality, view_multiverse_balance, activate_chrono_shield,
+    connect_to_type4_civilizations
+)
 import json
 import uuid
 import random
