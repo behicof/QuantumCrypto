@@ -5,6 +5,7 @@ from quantum_engine.predictor import QuantumMultiversePredictor
 from quantum_engine.nanobots import PlasmaNanobotSwarm
 from quantum_engine.economics import simulate_dark_energy_token
 from quantum_engine.holographic import HolographicMarketEngine, MultiverseEconomyGenerator, simulate_multiverse_collapse
+from quantum_engine.wallet import QuantumWalletTransporter, QuantumAsset, ChronoProtection
 import json
 import numpy as np
 import logging
@@ -372,6 +373,66 @@ def multiverse_collapse():
         
     except Exception as e:
         logging.error(f"Error in multiverse collapse simulation: {e}")
+        return jsonify({
+            'status': 'error',
+            'message': str(e)
+        }), 500
+
+
+@app.route('/api/quantum_wallet_transfer', methods=['POST'])
+def quantum_wallet_transfer():
+    """
+    مسیر API برای انتقال کوانتومی به کیف پول از طریق کرمچاله
+    این API امکان انتقال لحظه‌ای دارایی‌ها بین کیف پول‌ها با استفاده از کرمچاله‌های کوانتومی را فراهم می‌کند.
+    """
+    try:
+        data = request.json
+        wallet_address = data.get('wallet_address', 'DARK-QW:0x8f3a...')
+        amount = float(data.get('amount', 1000.0))
+        asset_name = data.get('asset_name', 'Dark Energy Token')
+        
+        # ایجاد کیف پول کوانتومی
+        wallet = QuantumWalletTransporter(wallet_address)
+        
+        # ایجاد دارایی کوانتومی
+        asset = QuantumAsset(amount, asset_name)
+        
+        # انجام انتقال کوانتومی
+        transfer_result = wallet.transfer(asset, amount)
+        
+        # ذخیره اطلاعات تراکنش در توکن انرژی تاریک
+        token = DarkEnergyToken(
+            address=wallet_address,
+            balance=amount,
+            fluctuation_rate=0.05,
+            casimir_effect=0.01,
+            hawking_radiation=0.001
+        )
+        
+        db.session.add(token)
+        db.session.commit()
+        
+        # بررسی حفظ علیت
+        chrono_protection = ChronoProtection()
+        transaction_hash = transfer_result['transaction_hash']
+        is_valid = chrono_protection.verify_timeline(transaction_hash)
+        
+        # ایجاد امضای کوانتومی
+        quantum_signature = chrono_protection.apply_quantum_signature(transaction_hash)
+        
+        # اضافه کردن اطلاعات اضافی به نتیجه
+        transfer_result['quantum_signature'] = quantum_signature
+        transfer_result['causality_preserved'] = is_valid
+        transfer_result['token_id'] = token.id
+        
+        return jsonify({
+            'status': 'success',
+            'transfer_result': transfer_result,
+            'message': 'Quantum wallet transfer completed successfully'
+        })
+        
+    except Exception as e:
+        logging.error(f"Error in quantum wallet transfer: {e}")
         return jsonify({
             'status': 'error',
             'message': str(e)
