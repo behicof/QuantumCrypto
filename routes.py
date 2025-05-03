@@ -28,6 +28,7 @@ from quantum_engine.god_mode import (
     forge_financial_reality, view_multiverse_balance, activate_chrono_shield,
     connect_to_type4_civilizations
 )
+from quantum_engine.vqc_model import VQCModel
 import json
 import uuid
 import random
@@ -1146,6 +1147,56 @@ def post_singularity_economy():
         
     except Exception as e:
         logging.error(f"Error in post-singularity economy simulation: {e}")
+        return jsonify({
+            'status': 'error',
+            'message': str(e)
+        }), 500
+
+
+@app.route('/api/vqc_prediction', methods=['POST'])
+def vqc_prediction():
+    try:
+        data = request.json
+        simulation_id = data.get('simulation_id')
+        
+        simulation = Simulation.query.get_or_404(simulation_id)
+        
+        # Initialize VQC model
+        feature_dim = data.get('feature_dim', 4)
+        vqc_model = VQCModel(feature_dim=feature_dim)
+        
+        # Prepare data
+        X = np.array(data.get('features'))
+        y = np.array(data.get('labels'))
+        X_train, X_test, y_train, y_test = vqc_model.prepare_data(X, y)
+        
+        # Train VQC model
+        vqc_model.train(X_train, y_train)
+        
+        # Evaluate VQC model
+        accuracy = vqc_model.evaluate(X_test, y_test)
+        
+        # Store prediction in database
+        new_prediction = Prediction(
+            simulation_id=simulation_id,
+            probability_landscape={"accuracy": accuracy},
+            optimal_strategy={"model": "VQC"},
+            quantum_volatility=np.random.uniform(0.1, 1.0),  # Simulated value
+            dark_energy_consumption=np.random.uniform(0.1, 10.0)  # Simulated value
+        )
+        
+        db.session.add(new_prediction)
+        db.session.commit()
+        
+        return jsonify({
+            'status': 'success',
+            'prediction_id': new_prediction.id,
+            'accuracy': accuracy,
+            'message': 'VQC prediction completed successfully'
+        })
+        
+    except Exception as e:
+        logging.error(f"Error in VQC prediction: {e}")
         return jsonify({
             'status': 'error',
             'message': str(e)
