@@ -32,7 +32,7 @@ from quantum_engine.vqc_model import VQCModel
 import json
 import uuid
 import random
-import numpy as np
+import np
 import logging
 from datetime import datetime, timedelta
 
@@ -1163,7 +1163,8 @@ def vqc_prediction():
         
         # Initialize VQC model
         feature_dim = data.get('feature_dim', 4)
-        vqc_model = VQCModel(feature_dim=feature_dim)
+        optimizer_name = data.get('optimizer_name', 'COBYLA')
+        vqc_model = VQCModel(feature_dim=feature_dim, optimizer_name=optimizer_name)
         
         # Prepare data
         X = np.array(data.get('features'))

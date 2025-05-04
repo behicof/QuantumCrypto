@@ -2,17 +2,26 @@ import numpy as np
 from qiskit import QuantumCircuit, Aer, execute
 from qiskit.circuit.library import ZZFeatureMap, TwoLocal
 from qiskit_machine_learning.algorithms import VQC
-from qiskit_machine_learning.optimizers import COBYLA
+from qiskit_machine_learning.optimizers import COBYLA, SPSA, ADAM
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 
 class VQCModel:
-    def __init__(self, feature_dim, ansatz_reps=3):
+    def __init__(self, feature_dim, ansatz_reps=3, optimizer_name='COBYLA'):
         self.feature_dim = feature_dim
         self.feature_map = ZZFeatureMap(feature_dimension=feature_dim, reps=2)
         self.ansatz = TwoLocal(num_qubits=feature_dim, reps=ansatz_reps, rotation_blocks='ry', entanglement_blocks='cz')
-        self.optimizer = COBYLA(maxiter=100)
+        
+        if optimizer_name == 'COBYLA':
+            self.optimizer = COBYLA(maxiter=200)
+        elif optimizer_name == 'SPSA':
+            self.optimizer = SPSA(maxiter=200)
+        elif optimizer_name == 'ADAM':
+            self.optimizer = ADAM(maxiter=200)
+        else:
+            raise ValueError(f"Unsupported optimizer: {optimizer_name}")
+        
         self.vqc = VQC(feature_map=self.feature_map, ansatz=self.ansatz, optimizer=self.optimizer)
         self.scaler = StandardScaler()
 
